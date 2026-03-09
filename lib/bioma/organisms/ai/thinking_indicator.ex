@@ -56,11 +56,11 @@ defmodule Bioma.Organisms.AI.ThinkingIndicator do
         class="flex items-center gap-2 cursor-pointer"
         phx-click={toggle_content(@toggle_id)}
       >
-        <%!-- Animated bouncing dots --%>
-        <div class="flex items-center gap-0.5">
-          <span class="h-1.5 w-1.5 rounded-full bg-ai-thinking-foreground animate-bounce [animation-delay:0ms]" />
-          <span class="h-1.5 w-1.5 rounded-full bg-ai-thinking-foreground animate-bounce [animation-delay:150ms]" />
-          <span class="h-1.5 w-1.5 rounded-full bg-ai-thinking-foreground animate-bounce [animation-delay:300ms]" />
+        <%!-- Animated pixel blocks --%>
+        <div class="flex items-end gap-[1.5px]">
+          <span class="w-1 h-1 rounded-none bg-ai-thinking-foreground animate-pixel-bounce" />
+          <span class="w-1 h-1 rounded-none bg-ai-thinking-foreground animate-pixel-bounce-delay-1" />
+          <span class="w-1 h-1 rounded-none bg-ai-thinking-foreground animate-pixel-bounce-delay-2" />
         </div>
         <%!-- Thinking text --%>
         <span class="text-sm text-ai-thinking-foreground font-medium">

@@ -9,7 +9,7 @@ defmodule Storybook.Organisms.AI.MarkdownRenderer do
         id: :default,
         description: "Markdown content",
         attributes: %{
-          content: "This is a **markdown** renderer component. It supports _italic_ and `inline code`."
+          content: MDEx.to_html!("This is a **markdown** renderer component. It supports _italic_ and `inline code`.")
         }
       }
     ]

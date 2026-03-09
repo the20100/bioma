@@ -27,6 +27,7 @@ defmodule DevWeb.Router do
     pipe_through :browser_live
 
     live "/", ThemeLive, :index
+    live "/chat", ChatLive, :index
   end
 
   scope "/", DevWeb do

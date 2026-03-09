@@ -2,8 +2,9 @@ defmodule Bioma.Atoms.Skeleton do
   @moduledoc """
   A skeleton component following shadcn/ui design patterns.
 
-  Renders a pulsing placeholder element used to indicate loading state.
-  Pair with width/height classes to match the shape of the content being loaded.
+  Renders a placeholder element with a stepped pixel-shimmer animation to
+  indicate loading state. Pair with width/height classes to match the shape
+  of the content being loaded.
 
   ## Examples
 
@@ -28,7 +29,7 @@ defmodule Bioma.Atoms.Skeleton do
     <div
       class={
         cn([
-          "animate-pulse rounded-md bg-muted",
+          "rounded-md bg-muted pixel-shimmer-bg animate-pixel-shimmer",
           @class
         ])
       }

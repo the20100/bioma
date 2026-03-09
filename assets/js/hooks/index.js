@@ -9,6 +9,7 @@ import Carousel from "./carousel.js";
 import Resizable from "./resizable.js";
 import Chart from "./chart.js";
 import SelectDisplay from "./select.js";
+import ComboboxFilter from "./combobox_filter.js";
 
 export const BiomaHooks = {
   ScrollBottom,
@@ -22,4 +23,5 @@ export const BiomaHooks = {
   Resizable,
   Chart,
   SelectDisplay,
+  ComboboxFilter,
 };

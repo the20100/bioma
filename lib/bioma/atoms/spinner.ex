@@ -1,8 +1,9 @@
 defmodule Bioma.Atoms.Spinner do
   @moduledoc """
-  A loading spinner component.
+  A pixel-style loading indicator.
 
-  Renders an animated SVG spinner with configurable size.
+  Renders three small hard-edged blocks that animate in an equalizer-wave
+  pattern with staggered timing. Pure CSS animation, no JavaScript required.
 
   ## Examples
 
@@ -21,30 +22,24 @@ defmodule Bioma.Atoms.Spinner do
 
   def spinner(assigns) do
     ~H"""
-    <svg
-      class={
-        cn([
-          "animate-spin",
-          size_class(@size),
-          @class
-        ])
-      }
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
+    <span
+      role="status"
+      aria-label="Loading"
+      class={cn(["inline-flex items-end", gap_class(@size), @class])}
       {@rest}
     >
-      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-      <path
-        class="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-      />
-    </svg>
+      <span class={cn([block_class(@size), "animate-pixel-bounce"])} />
+      <span class={cn([block_class(@size), "animate-pixel-bounce-delay-1"])} />
+      <span class={cn([block_class(@size), "animate-pixel-bounce-delay-2"])} />
+    </span>
     """
   end
 
-  defp size_class("sm"), do: "h-4 w-4"
-  defp size_class("md"), do: "h-6 w-6"
-  defp size_class("lg"), do: "h-8 w-8"
+  defp block_class("sm"), do: "w-[3px] h-[3px] bg-current rounded-none"
+  defp block_class("md"), do: "w-1 h-1 bg-current rounded-none"
+  defp block_class("lg"), do: "w-[5px] h-[5px] bg-current rounded-none"
+
+  defp gap_class("sm"), do: "gap-[1px]"
+  defp gap_class("md"), do: "gap-[1.5px]"
+  defp gap_class("lg"), do: "gap-0.5"
 end

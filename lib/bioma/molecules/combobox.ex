@@ -3,7 +3,8 @@ defmodule Bioma.Molecules.Combobox do
   A combobox component.
 
   An autocomplete input combining a popover with a searchable list of options.
-  Filtering is handled server-side via `phx-change`.
+  Client-side filtering is built-in via the `ComboboxFilter` hook (no server round-trip needed).
+  Optionally add `phx-change` for server-side filtering in addition.
 
   ## Examples
 
@@ -45,6 +46,7 @@ defmodule Bioma.Molecules.Combobox do
     ~H"""
     <div
       id={@id}
+      phx-hook="ComboboxFilter"
       phx-click-away={hide_content(@id)}
       class={cn(["relative inline-block", @class])}
     >
@@ -64,7 +66,11 @@ defmodule Bioma.Molecules.Combobox do
           ])
         }
       >
-        <span class={if(!@selected_label, do: "text-muted-foreground")}>
+        <span
+          id={"#{@id}-display"}
+          data-placeholder={@placeholder}
+          class={if(!@selected_label, do: "text-muted-foreground")}
+        >
           {@selected_label || @placeholder}
         </span>
         <svg
@@ -106,19 +112,26 @@ defmodule Bioma.Molecules.Combobox do
           </svg>
           <input
             type="text"
+            id={"#{@id}-search"}
             placeholder={@search_placeholder}
             class="flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground"
             {@rest}
           />
         </div>
         <%!-- Options --%>
-        <div class="max-h-60 overflow-auto p-1">
-          <div :if={@options == []} class="py-6 text-center text-sm text-muted-foreground">
+        <div id={"#{@id}-options"} class="max-h-60 overflow-auto p-1">
+          <div
+            id={"#{@id}-empty"}
+            class={cn(["py-6 text-center text-sm text-muted-foreground", @options != [] && "hidden"])}
+          >
             {@empty_text}
           </div>
           <div
             :for={option <- @options}
             role="option"
+            data-combobox-option
+            data-value={option.value}
+            data-label={String.downcase(option.label)}
             aria-selected={to_string(option.value == @value)}
             phx-click={select_option(@id, option.value)}
             class={

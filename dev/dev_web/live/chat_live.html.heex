@@ -1,0 +1,189 @@
+<div
+  id="chat-demo-root"
+  class={["h-screen flex bg-background text-foreground overflow-hidden", @dark_mode && "dark"]}
+>
+  <%!-- Conversation Sidebar --%>
+  <div class={[
+    "w-[300px] shrink-0 transition-all duration-200",
+    if(@sidebar_open, do: "translate-x-0", else: "-translate-x-full absolute -left-[300px]")
+  ]}>
+    <Bioma.Organisms.AI.ConversationSidebar.conversation_sidebar id="chat-sidebar" class="h-full">
+      <:header>
+        <div class="flex items-center justify-between">
+          <h2 class="font-semibold text-lg">Chats</h2>
+          <Bioma.Atoms.Button.button
+            variant="outline"
+            size="sm"
+            phx-click="new_chat"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-1">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            New
+          </Bioma.Atoms.Button.button>
+        </div>
+      </:header>
+      <Bioma.Organisms.AI.ConversationSidebar.conversation_item
+        :for={conv <- @conversations}
+        id={"conv-#{conv.id}"}
+        title={conv.title}
+        subtitle={conv.subtitle}
+        timestamp={conv.timestamp}
+        active={conv.id == @active_conversation}
+        phx-click="select_conversation"
+        phx-value-id={conv.id}
+      />
+    </Bioma.Organisms.AI.ConversationSidebar.conversation_sidebar>
+  </div>
+
+  <%!-- Main Chat Area --%>
+  <div class="flex-1 flex flex-col min-w-0">
+    <%!-- Chat Header --%>
+    <div class="flex items-center gap-3 px-4 py-3 border-b bg-background">
+      <%!-- Sidebar toggle --%>
+      <Bioma.Atoms.Button.button
+        variant="ghost"
+        size="icon"
+        phx-click="toggle_sidebar"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+          <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+          <line x1="9" y1="3" x2="9" y2="21" />
+        </svg>
+      </Bioma.Atoms.Button.button>
+
+      <%!-- Model selector --%>
+      <div class="w-[220px]">
+        <Bioma.Organisms.AI.ModelSelector.model_selector
+          id="model-select"
+          models={@models}
+          selected={@selected_model}
+          phx-change="select_model"
+          name="model"
+        />
+      </div>
+
+      <%!-- Agent status --%>
+      <Bioma.Organisms.AI.AgentStatus.agent_status
+        status={if @sending, do: "running", else: "idle"}
+        label={if @sending, do: "Generating...", else: "Ready"}
+      />
+
+      <div class="flex-1" />
+
+      <%!-- Token counter --%>
+      <Bioma.Organisms.AI.TokenCounter.token_counter
+        used={@token_used}
+        limit={@token_limit}
+      />
+
+      <%!-- Dark mode toggle --%>
+      <Bioma.Atoms.Button.button
+        variant="ghost"
+        size="icon"
+        phx-click="toggle_dark_mode"
+      >
+        <svg :if={!@dark_mode} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+        <svg :if={@dark_mode} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+          <circle cx="12" cy="12" r="5" />
+          <line x1="12" y1="1" x2="12" y2="3" />
+          <line x1="12" y1="21" x2="12" y2="23" />
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+          <line x1="1" y1="12" x2="3" y2="12" />
+          <line x1="21" y1="12" x2="23" y2="12" />
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+        </svg>
+      </Bioma.Atoms.Button.button>
+
+      <%!-- Back to home --%>
+      <a href="/" class="text-sm text-muted-foreground hover:text-foreground transition-colors ml-2">
+        ← Theme Demo
+      </a>
+    </div>
+
+    <%!-- Chat Thread --%>
+    <Bioma.Organisms.AI.ChatThread.chat_thread id="chat-thread" class="flex-1">
+      <%= for msg <- @messages do %>
+        <%= cond do %>
+          <% Map.get(msg, :tool_call) -> %>
+            <%!-- Tool call display --%>
+            <div class="max-w-[80%]">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="relative flex shrink-0 overflow-hidden rounded-full h-6 w-6">
+                  <span class="flex h-full w-full items-center justify-center rounded-full bg-muted text-xs font-medium">
+                    {String.first(msg.name)}
+                  </span>
+                </span>
+                <span class="text-xs font-medium text-muted-foreground">{msg.name}</span>
+              </div>
+              <Bioma.Organisms.AI.ToolCallDisplay.tool_call_display
+                name={msg.tool_call.name}
+                status={msg.tool_call.status}
+                parameters={Map.get(msg.tool_call, :parameters)}
+                result={Map.get(msg.tool_call, :result)}
+                error={Map.get(msg.tool_call, :error)}
+                duration_ms={Map.get(msg.tool_call, :duration_ms)}
+              />
+            </div>
+
+          <% true -> %>
+            <%!-- Regular message --%>
+            <Bioma.Organisms.AI.ChatMessage.chat_message
+              role={msg.role}
+              content={msg.content || ""}
+              name={Map.get(msg, :name)}
+              timestamp={Map.get(msg, :timestamp)}
+              thinking={Map.get(msg, :thinking)}
+            />
+        <% end %>
+      <% end %>
+
+      <%!-- Thinking indicator when sending --%>
+      <Bioma.Organisms.AI.ThinkingIndicator.thinking_indicator
+        :if={@sending}
+        text="Thinking..."
+      />
+    </Bioma.Organisms.AI.ChatThread.chat_thread>
+
+    <%!-- Chat Input --%>
+    <Bioma.Organisms.AI.ChatInput.chat_input
+      id="chat-input"
+      placeholder="Ask me anything about Elixir & Phoenix..."
+      submitting={@sending}
+      phx-submit="send_message"
+    >
+      <:tools>
+        <%!-- Attachment button --%>
+        <button type="button" class="p-1.5 rounded-lg hover:bg-muted text-muted-foreground transition-colors" title="Attach file">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+            <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+          </svg>
+        </button>
+        <%!-- Web search toggle --%>
+        <button type="button" class="p-1.5 rounded-lg hover:bg-muted text-muted-foreground transition-colors" title="Web search">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+            <path d="M2 12h20" />
+          </svg>
+        </button>
+      </:tools>
+      <:model_selector>
+        <select
+          name="model"
+          phx-change="select_model"
+          class="h-7 text-xs border-0 bg-muted/50 rounded-lg px-2 py-1 text-muted-foreground focus:ring-0 focus:outline-none cursor-pointer"
+        >
+          <option :for={model <- @models} value={model.id} selected={model.id == @selected_model}>
+            {model.name}
+          </option>
+        </select>
+      </:model_selector>
+    </Bioma.Organisms.AI.ChatInput.chat_input>
+  </div>
+</div>
