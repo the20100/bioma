@@ -4,6 +4,12 @@ A composable Phoenix LiveView component library for AI agentic platforms.
 
 Inspired by [shadcn/ui](https://ui.shadcn.com), built for Elixir.
 
+**[Live Demo →](https://bioma.fly.dev)**
+
+![Bioma component library](docs/cover.png)
+
+![Bioma component library](docs/cover2.png)
+
 ## Features
 
 - Atomic design: atoms, molecules, organisms
