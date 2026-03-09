@@ -5,7 +5,7 @@ primary_region = "cdg"
   dockerfile = "Dockerfile"
 
 [env]
-  PHX_HOST = "bioma.fly.dev"
+  PHX_HOST = "bioma.vima.work"
   PORT = "8080"
   MIX_ENV = "dev"
 
