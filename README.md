@@ -4,7 +4,7 @@ A composable Phoenix LiveView component library for AI agentic platforms.
 
 Inspired by [shadcn/ui](https://ui.shadcn.com), built for Elixir.
 
-**[Live Demo →](https://bioma.vima.work)**
+**[Live Demo →](https://bioma.vima.work)** · **[HexDocs →](https://hexdocs.pm/bioma)**
 
 ![Bioma component library](https://raw.githubusercontent.com/the20100/bioma/main/docs/cover.png)
 
