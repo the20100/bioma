@@ -1,0 +1,202 @@
+<div
+  id="theme-root"
+  style={build_style_string(@theme_overrides, @dark_mode, @radius)}
+  class={["min-h-screen bg-background text-foreground", @dark_mode && "dark"]}
+>
+  <%!-- Layout: sidebar (lg+) + main content --%>
+  <div class="flex">
+    <%!-- Sidebar — hidden on mobile/tablet, visible on lg+ --%>
+    <aside class="hidden lg:block sticky top-0 h-screen w-[280px] shrink-0 border-r bg-background overflow-y-auto">
+      <div class="flex flex-col gap-6 p-6">
+        <%!-- Logo & nav --%>
+        <div>
+          <span class="text-lg font-bold tracking-tight">Bioma</span>
+          <div class="mt-2">
+            <a href="/storybook" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Storybook →
+            </a>
+          </div>
+        </div>
+
+        <Bioma.Atoms.Separator.separator />
+
+        <%!-- Theme presets --%>
+        <div class="space-y-3">
+          <label class="text-sm font-medium">Theme</label>
+          <div class="flex flex-col gap-1.5">
+            <Bioma.Atoms.Button.button
+              :for={preset <- @presets}
+              variant={if @preset == preset.name, do: "default", else: "ghost"}
+              size="sm"
+              class="justify-start"
+              phx-click="select_preset"
+              phx-value-preset={preset.name}
+            >
+              <span class="mr-2 h-4 w-4 rounded-full shrink-0 border" style={"background: #{preset.primary_color}"}></span>
+              {preset.label}
+            </Bioma.Atoms.Button.button>
+          </div>
+        </div>
+
+        <Bioma.Atoms.Separator.separator />
+
+        <%!-- Radius --%>
+        <div class="space-y-3">
+          <label class="text-sm font-medium">Radius</label>
+          <div class="flex gap-1">
+            <Bioma.Atoms.Button.button
+              :for={{label, value} <- [{"0", "0rem"}, {"0.3", "0.3rem"}, {"0.5", "0.5rem"}, {"0.75", "0.75rem"}, {"1.0", "1.0rem"}]}
+              variant={if @radius == value, do: "default", else: "outline"}
+              size="sm"
+              class="flex-1 px-0"
+              phx-click="update_radius"
+              phx-value-value={value}
+            >
+              {label}
+            </Bioma.Atoms.Button.button>
+          </div>
+        </div>
+
+        <Bioma.Atoms.Separator.separator />
+
+        <%!-- Mode toggle --%>
+        <div class="space-y-3">
+          <label class="text-sm font-medium">Mode</label>
+          <div class="flex gap-1">
+            <Bioma.Atoms.Button.button
+              variant={if !@dark_mode, do: "default", else: "outline"}
+              size="sm"
+              class="flex-1"
+              phx-click="toggle_dark_mode"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+              Light
+            </Bioma.Atoms.Button.button>
+            <Bioma.Atoms.Button.button
+              variant={if @dark_mode, do: "default", else: "outline"}
+              size="sm"
+              class="flex-1"
+              phx-click="toggle_dark_mode"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1.5"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+              Dark
+            </Bioma.Atoms.Button.button>
+          </div>
+        </div>
+
+        <Bioma.Atoms.Separator.separator />
+
+        <%!-- Copy CSS --%>
+        <Bioma.Atoms.Button.button
+          variant="outline"
+          class="w-full"
+          phx-hook="CopyToClipboard"
+          id="copy-css-btn"
+          data-code={generate_css(@theme_overrides, @radius)}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          Copy CSS
+        </Bioma.Atoms.Button.button>
+
+        <%!-- Customize toggle --%>
+        <Bioma.Atoms.Button.button
+          variant="ghost"
+          size="sm"
+          class="w-full justify-start text-muted-foreground"
+          phx-click={Phoenix.LiveView.JS.toggle(to: "#theme-customizer")}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          Customize Tokens
+        </Bioma.Atoms.Button.button>
+      </div>
+
+      <%!-- Token customizer (hidden by default) --%>
+      <div id="theme-customizer" class="hidden border-t">
+        <DevWeb.ThemeLive.ThemeCustomizer.theme_customizer
+          token_groups={@token_groups}
+          theme_overrides={@theme_overrides}
+          dark_mode={@dark_mode}
+        />
+      </div>
+    </aside>
+
+    <%!-- Main content area --%>
+    <div class="flex-1 min-w-0">
+      <%!-- Mobile/tablet top bar — visible below lg --%>
+      <header class="lg:hidden sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div class="flex h-14 items-center justify-between px-4">
+          <span class="text-lg font-bold tracking-tight">Bioma</span>
+          <div class="flex items-center gap-2">
+            <Bioma.Atoms.Button.button
+              variant="ghost"
+              size="icon"
+              phx-click="toggle_dark_mode"
+            >
+              <%= if @dark_mode do %>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+              <% else %>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+              <% end %>
+            </Bioma.Atoms.Button.button>
+            <Bioma.Atoms.Button.button
+              variant="outline"
+              size="sm"
+              phx-hook="CopyToClipboard"
+              id="copy-css-btn-mobile"
+              data-code={generate_css(@theme_overrides, @radius)}
+            >
+              Copy CSS
+            </Bioma.Atoms.Button.button>
+          </div>
+        </div>
+        <%!-- Preset pills + radius (compact) --%>
+        <div class="flex items-center gap-2 px-4 pb-3 overflow-x-auto">
+          <Bioma.Atoms.Button.button
+            :for={preset <- @presets}
+            variant={if @preset == preset.name, do: "default", else: "outline"}
+            size="sm"
+            class="shrink-0"
+            phx-click="select_preset"
+            phx-value-preset={preset.name}
+          >
+            <span class="mr-1.5 h-3 w-3 rounded-full shrink-0" style={"background: #{preset.primary_color}"}></span>
+            {preset.label}
+          </Bioma.Atoms.Button.button>
+          <Bioma.Atoms.Separator.separator orientation="vertical" class="h-6 mx-1" />
+          <Bioma.Atoms.Button.button
+            :for={{label, value} <- [{"0", "0rem"}, {"0.5", "0.5rem"}, {"1.0", "1.0rem"}]}
+            variant={if @radius == value, do: "default", else: "outline"}
+            size="sm"
+            class="shrink-0"
+            phx-click="update_radius"
+            phx-value-value={value}
+          >
+            {label}
+          </Bioma.Atoms.Button.button>
+        </div>
+      </header>
+
+      <%!-- Theme-scoped preview --%>
+      <main
+        id="theme-preview"
+        class="bg-background text-foreground min-h-screen"
+      >
+        <div class="p-6 lg:p-8">
+          <DevWeb.ThemeLive.DashboardDemo.dashboard_demo
+            dark_mode={@dark_mode}
+            calendar_month={@calendar_month}
+            calendar_selected={@calendar_selected}
+            demo_plan={@demo_plan}
+            demo_terms={@demo_terms}
+            demo_page={@demo_page}
+            demo_bold={@demo_bold}
+            demo_italic={@demo_italic}
+            demo_underline={@demo_underline}
+            demo_align={@demo_align}
+            demo_notif={@demo_notif}
+          />
+        </div>
+      </main>
+    </div>
+  </div>
+</div>

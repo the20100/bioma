@@ -1,0 +1,32 @@
+# Dependencies and build
+/_build/
+/deps/
+*.ez
+*.beam
+
+# Generated files
+/priv/static/assets/
+erl_crash.dump
+
+# Mix
+mix.lock
+
+# Editor
+.elixir_ls/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tailwind/esbuild binaries
+/_build/tailwind-*
+/_build/esbuild-*
+
+.env
+.env.*
+
+.claude/
