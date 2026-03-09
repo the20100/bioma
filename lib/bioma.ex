@@ -90,7 +90,10 @@ defmodule Bioma do
             quote(do: import(Bioma.Molecules.DropdownMenu)),
             quote(do: import(Bioma.Molecules.Popover)),
             quote(do: import(Bioma.Molecules.ScrollArea)),
-            quote(do: import(Bioma.Molecules.CommandPalette))
+            quote(do: import(Bioma.Molecules.CommandPalette)),
+            quote(do: import(Bioma.Molecules.Tree)),
+            quote(do: import(Bioma.Molecules.MarkdownEditor)),
+            quote(do: import(Bioma.Molecules.Kanban))
           ]
 
         :organisms ->

@@ -10,6 +10,8 @@ import Resizable from "./resizable.js";
 import Chart from "./chart.js";
 import SelectDisplay from "./select.js";
 import ComboboxFilter from "./combobox_filter.js";
+import MarkdownEditor from "./markdown_editor.js";
+import Kanban from "./kanban.js";
 
 export const BiomaHooks = {
   ScrollBottom,
@@ -24,4 +26,6 @@ export const BiomaHooks = {
   Chart,
   SelectDisplay,
   ComboboxFilter,
+  MarkdownEditor,
+  Kanban,
 };

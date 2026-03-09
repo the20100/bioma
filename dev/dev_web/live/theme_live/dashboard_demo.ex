@@ -33,6 +33,9 @@ defmodule DevWeb.ThemeLive.DashboardDemo do
   import Bioma.Molecules.Table
   import Bioma.Molecules.Carousel
   import Bioma.Molecules.Pagination
+  import Bioma.Molecules.Tree
+  import Bioma.Molecules.MarkdownEditor
+  import Bioma.Molecules.Kanban
 
   attr :dark_mode, :boolean, default: false
   attr :calendar_month, :any, default: nil
@@ -45,6 +48,8 @@ defmodule DevWeb.ThemeLive.DashboardDemo do
   attr :demo_underline, :boolean, default: false
   attr :demo_align, :string, default: "left"
   attr :demo_notif, :map, default: %{}
+  attr :demo_markdown, :string, default: ""
+  attr :demo_preview_html, :string, default: nil
 
   def dashboard_demo(assigns) do
     ~H"""
@@ -108,6 +113,17 @@ defmodule DevWeb.ThemeLive.DashboardDemo do
 
       <%!-- Block 20: Carousel --%>
       <.carousel_block />
+
+      <%!-- Block 21: Tree View --%>
+      <.tree_view_block />
+
+      <%!-- Block 22: Markdown Editor --%>
+      <.markdown_editor_block markdown={@demo_markdown} preview_html={@demo_preview_html} />
+    </div>
+
+    <%!-- Block 23: Kanban Board (full-width, outside the masonry grid) --%>
+    <div class="mt-6">
+      <.kanban_board_block />
     </div>
     """
   end
@@ -1019,5 +1035,183 @@ defmodule DevWeb.ThemeLive.DashboardDemo do
       %{label: "Undo", keys: ["⌘", "Z"]},
       %{label: "Select All", keys: ["⌘", "A"]}
     ]
+  end
+
+  # ── Block 21: Tree View ────────────────────────────────────────────────
+
+  attr :class, :string, default: nil
+
+  defp tree_view_block(assigns) do
+    ~H"""
+    <.card>
+      <.card_header>
+        <.card_title>Tree View</.card_title>
+        <.card_description>File browser — expand/collapse folders.</.card_description>
+      </.card_header>
+      <.card_content>
+        <.tree id="demo-tree" class="border rounded-md p-2 bg-muted/20">
+          <.tree_node id="dt-src" label="src" expanded>
+            <:icon>
+              <svg class="h-4 w-4 text-amber-500" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+              </svg>
+            </:icon>
+            <.tree_node id="dt-atoms" label="atoms" expanded>
+              <:icon>
+                <svg class="h-4 w-4 text-amber-500" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                </svg>
+              </:icon>
+              <.tree_node id="dt-button" label="button.ex" selected>
+                <:icon>
+                  <svg class="h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                    <polyline points="14 2 14 8 20 8" />
+                  </svg>
+                </:icon>
+              </.tree_node>
+              <.tree_node id="dt-input" label="input.ex">
+                <:icon>
+                  <svg class="h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                    <polyline points="14 2 14 8 20 8" />
+                  </svg>
+                </:icon>
+              </.tree_node>
+              <.tree_node id="dt-badge" label="badge.ex">
+                <:icon>
+                  <svg class="h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                    <polyline points="14 2 14 8 20 8" />
+                  </svg>
+                </:icon>
+              </.tree_node>
+            </.tree_node>
+            <.tree_node id="dt-molecules" label="molecules">
+              <:icon>
+                <svg class="h-4 w-4 text-amber-500" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                </svg>
+              </:icon>
+              <.tree_node id="dt-card" label="card.ex">
+                <:icon>
+                  <svg class="h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                    <polyline points="14 2 14 8 20 8" />
+                  </svg>
+                </:icon>
+              </.tree_node>
+              <.tree_node id="dt-tree" label="tree.ex">
+                <:icon>
+                  <svg class="h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                    <polyline points="14 2 14 8 20 8" />
+                  </svg>
+                </:icon>
+              </.tree_node>
+            </.tree_node>
+          </.tree_node>
+          <.tree_node id="dt-mix" label="mix.exs">
+            <:icon>
+              <svg class="h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                <polyline points="14 2 14 8 20 8" />
+              </svg>
+            </:icon>
+          </.tree_node>
+        </.tree>
+      </.card_content>
+    </.card>
+    """
+  end
+
+  # ── Block 22: Markdown Editor ─────────────────────────────────────────
+
+  attr :markdown, :string, default: ""
+  attr :preview_html, :string, default: nil
+
+  defp markdown_editor_block(assigns) do
+    ~H"""
+    <.card>
+      <.card_header>
+        <.card_title>Markdown Editor</.card_title>
+        <.card_description>Toolbar formatting · Split/preview modes · Live preview via phx-change.</.card_description>
+      </.card_header>
+      <.card_content>
+        <.markdown_editor
+          id="demo-md-editor"
+          name="demo_markdown"
+          value={@markdown}
+          preview_html={@preview_html}
+          mode="split"
+          rows={8}
+          phx-change="demo_markdown_change"
+          phx-debounce="300"
+        />
+      </.card_content>
+    </.card>
+    """
+  end
+
+  # ── Block 23: Kanban Board ────────────────────────────────────────────
+
+  defp kanban_board_block(assigns) do
+    ~H"""
+    <.card>
+      <.card_header>
+        <.card_title>Kanban Board</.card_title>
+        <.card_description>Drag cards between columns. Fires <code class="text-xs bg-muted px-1 py-0.5 rounded">kanban_card_moved</code> LiveView events.</.card_description>
+      </.card_header>
+      <.card_content class="overflow-x-auto">
+        <.kanban id="demo-kanban">
+          <.kanban_column id="kb-backlog" title="Backlog" count={3}>
+            <.kanban_card id="kb-c1" title="Design system audit" label="Design" priority="low" />
+            <.kanban_card
+              id="kb-c2"
+              title="Set up CI/CD pipeline"
+              label="Infra"
+              description="GitHub Actions with Elixir + Docker."
+              priority="medium"
+              assignee="AR"
+            />
+            <.kanban_card id="kb-c3" title="Write onboarding docs" label="Docs" />
+          </.kanban_column>
+
+          <.kanban_column id="kb-progress" title="In Progress" count={2}>
+            <.kanban_card
+              id="kb-c4"
+              title="Build Kanban component"
+              label="Feature"
+              priority="high"
+              description="Native HTML5 DnD, no external deps."
+              assignee="VM"
+            />
+            <.kanban_card
+              id="kb-c5"
+              title="Markdown editor"
+              label="Feature"
+              priority="medium"
+              assignee="VM"
+            />
+          </.kanban_column>
+
+          <.kanban_column id="kb-review" title="Review" count={1}>
+            <.kanban_card
+              id="kb-c6"
+              title="Tree view component"
+              label="Feature"
+              priority="low"
+              assignee="AR"
+            />
+          </.kanban_column>
+
+          <.kanban_column id="kb-done" title="Done" count={2}>
+            <.kanban_card id="kb-c7" title="Initial scaffolding" label="Infra" />
+            <.kanban_card id="kb-c8" title="Tailwind v4 theme" label="Design" />
+          </.kanban_column>
+        </.kanban>
+      </.card_content>
+    </.card>
+    """
   end
 end

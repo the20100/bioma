@@ -31,6 +31,9 @@ defmodule DevWeb.ThemeLive do
         "marketing" => false,
         "security" => true
       })
+      # Markdown editor demo state
+      |> assign(:demo_markdown, demo_markdown_initial())
+      |> assign(:demo_preview_html, MDEx.to_html!(demo_markdown_initial()))
 
     {:ok, socket}
   end
@@ -93,6 +96,13 @@ defmodule DevWeb.ThemeLive do
   def handle_event("demo_toggle_notif", %{"id" => id}, socket) do
     notif = socket.assigns.demo_notif
     {:noreply, assign(socket, :demo_notif, Map.update!(notif, id, &(!&1)))}
+  end
+
+  def handle_event("demo_markdown_change", %{"value" => value}, socket) do
+    {:noreply,
+     socket
+     |> assign(:demo_markdown, value)
+     |> assign(:demo_preview_html, MDEx.to_html!(value))}
   end
 
   # ── Calendar events ────────────────────────────────────────────────────
@@ -170,6 +180,26 @@ defmodule DevWeb.ThemeLive do
       |> Enum.join("\n")
 
     "#{selector} {\n#{lines}\n}"
+  end
+
+  defp demo_markdown_initial do
+    """
+    # Welcome to Bioma
+
+    A composable **Phoenix LiveView** component library for AI agentic platforms.
+
+    ## Features
+
+    - _Atomic design_: atoms → molecules → organisms
+    - Tailwind CSS v4 with semantic color tokens
+    - `Phoenix.LiveView.JS` for zero-JS interactivity
+
+    > Edit this text and switch to **Split** or **Preview** to see live rendering.
+
+    ```elixir
+    use Bioma
+    ```
+    """
   end
 
   @doc false
