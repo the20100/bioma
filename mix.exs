@@ -80,8 +80,11 @@ defmodule Bioma.MixProject do
     [
       maintainers: ["the20100"],
       licenses: ["MIT"],
-      links: %{"GitHub" => @source_url},
-      files: ~w(lib assets/js/hooks priv .formatter.exs mix.exs README.md LICENSE.md CHANGELOG.md)
+      links: %{
+        "GitHub" => @source_url,
+        "Demo" => "https://bioma.vima.work"
+      },
+      files: ~w(lib assets/js/hooks assets/css/app.css .formatter.exs mix.exs README.md LICENSE.md CHANGELOG.md)
     ]
   end
 
@@ -90,6 +93,7 @@ defmodule Bioma.MixProject do
       main: "readme",
       extras: ["README.md", "CHANGELOG.md"],
       source_ref: "v#{@version}",
+      source_url_pattern: "#{@source_url}/blob/v#{@version}/%{path}#L%{line}",
       groups_for_modules: [
         Atoms: ~r/Bioma\.Atoms\./,
         Molecules: ~r/Bioma\.Molecules\./,

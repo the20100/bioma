@@ -2,6 +2,45 @@ defmodule Bioma do
   @moduledoc """
   A composable Phoenix LiveView component library for AI agentic platforms.
 
+  Inspired by [shadcn/ui](https://ui.shadcn.com), Bioma provides atomic,
+  molecule, and AI-specific organism components built with Tailwind CSS v4
+  and Phoenix LiveView.
+
+  ## Setup
+
+  ### 1. Add to `mix.exs`
+
+      def deps do
+        [
+          {:bioma, "~> 0.1"},
+          # Optional: markdown rendering in ChatMessage/CodeBlock
+          {:mdex, "~> 0.4"},
+          # Optional: icons
+          {:heroicons, "~> 0.5"}
+        ]
+      end
+
+  ### 2. Tailwind CSS (`assets/css/app.css`)
+
+  Add a `@source` directive and copy the `@theme { ... }` and `.dark { ... }`
+  blocks from `deps/bioma/assets/css/app.css`:
+
+      @import "tailwindcss";
+
+      @source "../../deps/bioma/lib/**/*.ex";
+
+      @theme {
+        /* paste contents from deps/bioma/assets/css/app.css */
+      }
+
+  ### 3. JS Hooks (`assets/js/app.js`)
+
+      import { BiomaHooks } from "../../deps/bioma/assets/js/hooks/index.js";
+
+      let liveSocket = new LiveSocket("/live", Socket, {
+        hooks: { ...BiomaHooks, ...YourOwnHooks },
+      });
+
   ## Usage
 
       # Import all components
@@ -13,6 +52,7 @@ defmodule Bioma do
 
       # Import individual components
       import Bioma.Atoms.Button
+      import Bioma.Organisms.AI.ChatMessage
   """
 
   defmacro __using__(opts \\ []) do
